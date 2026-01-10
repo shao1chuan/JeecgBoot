@@ -1,0 +1,87 @@
+目标结构
+远程
+
+origin：你的 GitHub 仓库（你只往这里 push）
+
+upstream：官方 JeecgBoot 仓库（你只从这里拉更新）
+
+分支策略
+
+main：只做“同步官方更新”的镜像分支（尽量不放你自己的改动）
+
+my-dev：你自己的长期开发分支（所有修改只提交/推送到这里）
+
+一次性初始化（只做一次）
+
+前提：你已经 Fork 了官方仓库到你自己的 GitHub
+
+1）克隆你自己的仓库：
+
+git clone https://github.com/<你的账号>/JeecgBoot.git
+cd JeecgBoot
+
+
+2）添加官方为 upstream：
+
+git remote add upstream https://github.com/jeecgboot/JeecgBoot.git
+git remote -v
+
+
+3）确保本地 main 跟踪 origin/main：
+
+git checkout -B main origin/main
+git pull
+
+
+4）创建并推送长期开发分支 my-dev：
+
+git checkout -b my-dev
+git push -u origin my-dev
+
+
+从此以后：你日常只在 my-dev 写代码、提交、push。
+
+日常开发（只动 my-dev）
+git checkout my-dev
+# 改代码...
+git add .
+git commit -m "feat: xxx"
+git push
+
+同步官方更新（你的核心流程）
+
+你想把官方最新更新“吸收”到你的开发分支时，按这套固定步骤：
+
+Step 1：拉取官方更新
+git fetch upstream
+
+Step 2：更新你本地的 main（让 main 跟上官方）
+git checkout main
+git pull origin main
+git merge upstream/main
+git push origin main
+
+
+如果官方默认分支是 master，把 upstream/main 改成 upstream/master。
+
+Step 3：把最新 main 合并进 my-dev（你的开发分支跟进官方）
+git checkout my-dev
+git merge main
+git push
+
+你需要发布/打版本时怎么办？
+
+方案B下通常是：
+
+对外展示/稳定版本：用 main（几乎等同官方）
+
+你自己的产品/定制：用 my-dev
+
+如果某次你确实想把 my-dev 的成果发布到 main，那就“破例”合一次：
+
+git checkout main
+git merge my-dev
+git push origin main
+
+
+但你既然说要 main 干净稳定，那就尽量少做这个。
